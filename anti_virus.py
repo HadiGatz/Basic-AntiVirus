@@ -8,7 +8,7 @@ headers = {
     "x-apikey": API_KEY
 }
 
-file = open(input("Enter your file name: "))
+file = open(input("Enter your file name: "), "rb")
 
 def check_if_corrupted():
     try:
@@ -16,7 +16,7 @@ def check_if_corrupted():
     except:
         print("The file is corrupt.")
 
-response = requests.get(url, files={'file': file}, headers=headers)
+response = requests.post(url, files={'file': file}, headers=headers)
 
 if response.status_code == 200:
     print("File successfully uploaded and scanned.")
