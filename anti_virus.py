@@ -1,7 +1,7 @@
 import requests
-import sys
 import time
 from termcolor import colored
+
 
 url = 'https://www.virustotal.com/api/v3/files'
 
