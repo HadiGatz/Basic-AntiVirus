@@ -1,6 +1,7 @@
 import requests
 import sys
-from termcolor import colored, cprint
+import time
+from termcolor import colored
 
 url = 'https://www.virustotal.com/api/v3/files'
 
@@ -10,8 +11,16 @@ headers = {
     "x-apikey": API_KEY
 }
 
+def get_user_file():
+    while True:
+      try: 
+          file = open(input("Enter your file name: "), "rb")
+          return file
+      except FileNotFoundError:
+          print("Your file was not found.\nTry again.")
 
-file = open(input("Enter your file name: "), "rb")
+
+file = get_user_file()
 
 def check_if_corrupted():
     try:
@@ -35,6 +44,10 @@ def print_analysis_results(analysis):
             print(x, colored(y, "red"))
         elif y == 0:
             print(x, colored(y, "green"))
+        time.sleep(1)
+    print("------------------------------------------")
+    print("Thank you for using our service.")
+
 response = scan_file(file)
 
 if response.status_code == 200:
@@ -44,4 +57,4 @@ if response.status_code == 200:
     analysis = retrieve_scan_results(scan_url) 
     print_analysis_results(analysis.json()['data']['attributes']['stats'])
 else:
-    print("Error")
+    print(f"Error {response.status_code}")
