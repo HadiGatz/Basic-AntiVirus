@@ -25,6 +25,7 @@ def check_if_corrupted(file):
         file.read()
     except:
         print("The file is corrupt.")
+    return True
 
 def scan_file(file):
     response = requests.post(url, files={'file': file}, headers=headers)
@@ -46,5 +47,13 @@ def print_analysis_results(analysis):
     print("------------------------------------------")
     print("Thank you for using our service.")
 
-if __name__ == "__main__":
-    pass
+def full_analysis(file):
+    if check_if_corrupted(file):
+        response = scan_file(file)
+        scan_results = dict(response.json())
+        scan_url = scan_results['data']['links']['self']
+        analysis = retrieve_scan_results(scan_url)
+        print_analysis_results(analysis.json()['data']['attributes']['stats'])
+
+
+
