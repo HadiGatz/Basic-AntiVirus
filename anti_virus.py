@@ -20,9 +20,7 @@ def get_user_file():
           print("Your file was not found.\nTry again.")
 
 
-file = get_user_file()
-
-def check_if_corrupted():
+def check_if_corrupted(file):
     try:
         file.read()
     except:
@@ -48,13 +46,5 @@ def print_analysis_results(analysis):
     print("------------------------------------------")
     print("Thank you for using our service.")
 
-response = scan_file(file)
-
-if response.status_code == 200:
-    print("File successfully uploaded and scanned.")
-    scan_results = dict(response.json())
-    scan_url = scan_results['data']['links']['self']
-    analysis = retrieve_scan_results(scan_url) 
-    print_analysis_results(analysis.json()['data']['attributes']['stats'])
-else:
-    print(f"Error {response.status_code}")
+if __name__ == "__main__":
+    pass

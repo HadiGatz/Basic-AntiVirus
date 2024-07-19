@@ -1,21 +1,22 @@
 import pygame
 import tkinter
 import tkinter.filedialog
+import anti_virus as av
 
-# Screen parameters
+# screen parameters
 SCREEN_WIDTH = 600
 SCREEN_HEIGHT = 600
 
-# Initialize screen
+# initialize screen
 pygame.init()
 size = (SCREEN_WIDTH, SCREEN_HEIGHT)
 screen = pygame.display.set_mode(size)
 pygame.display.set_caption("AKAntiVirus")
 
-# Load background image
+# load background image
 background_image = pygame.image.load('antiviruscover.png')
 
-# Button class
+# button class
 class Button:
     def __init__(self, x, y, width=200, height=120):
         self.rect = pygame.Rect(x, y, width, height)
@@ -32,16 +33,16 @@ class FileButton(Button):
 
     def file_prompt(self):
         top = tkinter.Tk()
-        top.withdraw()  # hide window
+        top.withdraw()  
         file_name = tkinter.filedialog.askopenfilename(parent=top)
         top.destroy()
         return file_name
 
-# Create button instances
+# create button instances
 scan_file_button = FileButton(50, 410)
 scan_directory_button = Button(350, 410)
 
-# Main loop
+# main loop
 run = True
 while run:
     screen.blit(background_image, (0, 0))
@@ -52,8 +53,14 @@ while run:
             run = False
         elif scan_file_button.is_clicked():
             print("Scan File Button Clicked")
-            print(scan_file_button.file_prompt())
-            
+            file = scan_file_button.file_prompt()
+            av.check_if_corrupted(file)
+            response = av.scan_file(file)
+            scan_results = dict(response.json())
+            scan_url = scan_results['data']['links']['self']
+            analysis = av.retrieve_scan_results(scan_url)
+            av.print_analysis_results(analysis.json()['data']['attributes']['stats'])      
+
         elif scan_directory_button.is_clicked():
             print("Scan Directory Button Clicked")
 
