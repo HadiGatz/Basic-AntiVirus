@@ -22,7 +22,8 @@ def get_user_file():
 
 def check_if_corrupted(file):
     try:
-        file.read()
+        with open(file, "rb") as data:
+            data.read()
     except:
         print("The file is corrupt.")
     return True
