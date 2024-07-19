@@ -1,4 +1,6 @@
 import pygame
+import tkinter
+import tkinter.filedialog
 
 # Screen parameters
 SCREEN_WIDTH = 600
@@ -22,11 +24,22 @@ class Button:
         pos = pygame.mouse.get_pos()
         if self.rect.collidepoint(pos):
             if pygame.mouse.get_pressed()[0] == 1:
-                print("clicked")
+                return True
+
+class FileButton(Button):
+    def __init__(self, x, y, width=200, height=120):
+        Button.__init__(self, x, y, width, height)
+
+    def file_prompt(self):
+        top = tkinter.Tk()
+        top.withdraw()  # hide window
+        file_name = tkinter.filedialog.askopenfilename(parent=top)
+        top.destroy()
+        return file_name
 
 # Create button instances
-scan_file_button = Button(50, 410)
-scan_directory_button = Button(450, 410)
+scan_file_button = FileButton(50, 410)
+scan_directory_button = Button(350, 410)
 
 # Main loop
 run = True
@@ -39,6 +52,8 @@ while run:
             run = False
         elif scan_file_button.is_clicked():
             print("Scan File Button Clicked")
+            print(scan_file_button.file_prompt())
+            
         elif scan_directory_button.is_clicked():
             print("Scan Directory Button Clicked")
 
