@@ -6,7 +6,7 @@ from termcolor import colored
 
 url = 'https://www.virustotal.com/api/v3/files'
 
-API_KEY = "d6970bf852d449af239cc1e7026f11ecdf69c5189ff6451c173068ef6e311c9c"
+API_KEY = "fceb4dc36a4980567dc71cb22291dd80366e027b2cc2eeb0d776b0d4932e11fd"
 
 headers = {
     "x-apikey": API_KEY
@@ -53,19 +53,19 @@ def print_analysis_results(analysis):
     print("Thank you for using our service.")
     return analysis
 
-def full_analysis_directory(directory):
+def full_analysis_directory(directory, target_directory):
     for item in os.listdir(directory):
         current_path = os.path.join(directory, item) 
         if os.path.isfile(current_path):
-            full_analysis(current_path)
+            full_analysis(current_path, target_directory)
         elif os.path.isdir(current_path):
-            full_analysis_directory(current_path)
+            full_analysis_directory(current_path, target_directory)
 
 def export_analysis(directory, analysis, file_name):
     split_tup = os.path.splitext(os.path.basename(file_name))  
     file_placement = os.path.join(directory, f"{split_tup[0]}-analysis.txt")
     with open(file_placement, "w") as f:
-        f.write(analysis)
+        f.write(str(analysis))
 
 def full_analysis(file, target_directory):
     if check_if_corrupted(file):

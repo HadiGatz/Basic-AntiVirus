@@ -216,7 +216,8 @@ def scan_directory_menu():
 def scan_button_clicked():
     hide_main_menu()
     file = filedialog.askopenfilename(title="Select your file")
-    file_scan_thread = Thread(target=av.full_analysis, args=(file,))
+    target_directory = askdirectory(title='Where to keep analysis files:')
+    file_scan_thread = Thread(target=av.full_analysis, args=(file, target_directory))
     file_scan_thread.start()
     scan_menu(file)
 
@@ -233,6 +234,7 @@ def scan_done_menu(file):
 def scan_directory_button_clicked():
     hide_main_menu()
     directory = askdirectory(title='Select directory')
+    print(".")
     target_directory = askdirectory(title='Where to keep analysis files:')
     directory_scan_thread = Thread(target=av.full_analysis_directory, args=(directory, target_directory))
     directory_scan_thread.start()
