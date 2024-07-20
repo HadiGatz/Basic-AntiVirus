@@ -10,6 +10,24 @@ from threading import Thread
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 RESOURCES_PATH = os.path.join(BASE_DIR, "resources")
 
+class Pong:
+    def __init__(self, x=117, y=350, width=466, height=500):
+        self.x = x
+        self.y = y
+        self.width = width
+        self.height = height
+
+    def draw_board(self):
+        canvas.create_rectangle(self.x, 
+                                self.y, 
+                                self.width, 
+                                self.height,
+                                fill = "#000000",
+                                outline=" "
+                                )
+    def draw_ball(self, x=self.x/2, y=self.y/2, width=):
+        canvas.create_oval()
+
 def hide_rect(rect):
     canvas.itemconfig(rect, state='hidden')
 
@@ -117,7 +135,15 @@ def scan_menu():
 
     countdown(6, timer, (lambda: hide_scan_menu(scanning_text, timer)))
 
-    
+def scan_directory_menu():
+    waiting_text = canvas.create_text(
+        69.0,
+        201.0,
+        anchor="nw",
+        text="While you wait:",
+        fill="#FFFFFF",
+        font=("Inter Black", 64 * -1)
+    )
 
 def scan_button_clicked():
     hide_main_menu()
@@ -147,7 +173,11 @@ def scan_done_menu():
         font=("Inter Black", 64 * -1)
     )
 
+def scan_directory_button_clicked():
+    hide_main_menu()
 
+    directory = askdirectory(title='Select directory')
+    av.full_analysis_directory(directory)
 
 button_image_1 = PhotoImage(file=os.path.join(RESOURCES_PATH, "button_1.png"))
 button_1 = Button(
@@ -181,7 +211,7 @@ button_2 = Button(
     image=button_image_2,
     borderwidth=0,
     highlightthickness=0,
-    command=print("clicked"),
+    command=lambda: scan_directory_button_clicked(),
     relief="flat"
 )
 button_2.place(

@@ -1,3 +1,4 @@
+import os
 import requests
 import time
 from termcolor import colored
@@ -51,6 +52,14 @@ def print_analysis_results(analysis):
     print("------------------------------------------")
     print("Thank you for using our service.")
     return analysis
+
+def full_analysis_directory(directory):
+    for item in os.listdir(directory):
+        current_path = os.path.join(directory, item) 
+        if os.path.isfile(current_path):
+            full_analysis(current_path)
+        elif os.path.isdir(current_path):
+            full_analysis_directory(current_path)
 
 def full_analysis(file):
     if check_if_corrupted(file):
