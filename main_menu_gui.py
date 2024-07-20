@@ -1,5 +1,6 @@
 from tkinter import *
 from tkinter import filedialog
+from tkinter.filedialog import askdirectory
 
 import os
 import anti_virus as av
@@ -80,13 +81,20 @@ def hide_main_menu():
     hide_rect(white_line1)
     hide_rect(white_line2)
 
+def hide_scan_menu(scanning_text, timer):
+    hide_text(scanning_text)
+    hide_text(timer)
+    scan_done_menu()
+
 def update_timer(timer, time):
     canvas.itemconfig(timer, text=str(time))
 
-def countdown(count, timer):
+def countdown(count, timer, when_finished):
     update_timer(timer, count)
     if count > 0:
-        window.after(1000, countdown, count - 1, timer) 
+        window.after(1000, countdown, count - 1, timer, when_finished) 
+    else:
+        when_finished()
 
 def scan_menu():
     scanning_text = canvas.create_text(
@@ -107,14 +115,20 @@ def scan_menu():
         font=("Inter Black", 64 * -1)
     )
 
-    countdown(5, timer)  
+    countdown(6, timer, (lambda: hide_scan_menu(scanning_text, timer)))
+
+    
 
 def scan_button_clicked():
     hide_main_menu()
-    file = filedialog.askopenfilename()
+    file = filedialog.askopenfilename(title="Select your file")
     file_scan_thread = Thread(target=av.full_analysis, args=(file,))
     file_scan_thread.start()
     scan_menu()
+
+def scan_done_menu():
+    directory = askdirectory(title='Select Folder') 
+    av.export_analysis(directory, av.report)
 
 
 

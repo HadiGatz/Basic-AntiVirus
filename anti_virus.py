@@ -37,6 +37,8 @@ def retrieve_scan_results(url):
     return analysis
 
 def print_analysis_results(analysis):
+    global report
+    report = ""
     print(colored("Your file was checked by 70+ Anti-Virus softwares.", "green"))
     print("------------------------------------------")
     for x, y in analysis.items():
@@ -44,9 +46,11 @@ def print_analysis_results(analysis):
             print(x, colored(y, "red"))
         elif y == 0:
             print(x, colored(y, "green"))
+        report += f"{x} : {y}\n"
         time.sleep(0.5)
     print("------------------------------------------")
     print("Thank you for using our service.")
+    return analysis
 
 def full_analysis(file):
     if check_if_corrupted(file):
@@ -55,6 +59,11 @@ def full_analysis(file):
         scan_url = scan_results['data']['links']['self']
         analysis = retrieve_scan_results(scan_url)
         print_analysis_results(analysis.json()['data']['attributes']['stats'])
+
+def export_analysis(directory, analysis):
+    file_placement = "/".join((directory, "analysis_results.txt"))
+    with open(file_placement, "w") as f:
+        f.write(analysis)
 
 
 
