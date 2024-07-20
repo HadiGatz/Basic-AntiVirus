@@ -127,8 +127,25 @@ def scan_button_clicked():
     scan_menu()
 
 def scan_done_menu():
+    directory_ask = canvas.create_text(
+        100,
+        401.0,
+        anchor="nw",
+        text="Pick the directory\n to which the report\n would be exported",
+        fill="#FFFFFF",
+        font=("Inter Black", 50 * -1)
+    )
     directory = askdirectory(title='Select Folder') 
     av.export_analysis(directory, av.report)
+    hide_text(directory_ask)
+    scan_done = canvas.create_text(
+        69.0,
+        401.0,
+        anchor="nw",
+        text="Thanks for using\nour services.",
+        fill="#FFFFFF",
+        font=("Inter Black", 64 * -1)
+    )
 
 
 
