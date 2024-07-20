@@ -1,7 +1,6 @@
 from tkinter import *
 from tkinter import filedialog
 from tkinter.filedialog import askdirectory
-
 import os
 import anti_virus as av
 from threading import Thread
@@ -11,22 +10,90 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 RESOURCES_PATH = os.path.join(BASE_DIR, "resources")
 
 class Pong:
-    def __init__(self, x=117, y=350, width=466, height=500):
-        self.x = x
-        self.y = y
-        self.width = width
-        self.height = height
+    def __init__(self, canvas):
+        self.canvas = canvas
+        self.canvas_width = canvas.winfo_reqwidth()
+        self.canvas_height = canvas.winfo_reqheight()
+        
+        self.board_width = 300
+        self.board_height = 150
+        self.board_x = (self.canvas_width - self.board_width) // 2
+        self.board_y = self.canvas_height - self.board_height - 150
+        
+        self.paddle_width = 60
+        self.paddle_height = 10
+        self.paddle_x = self.board_x + (self.board_width - self.paddle_width) // 2
+        self.paddle_y = self.board_y + self.board_height - self.paddle_height
+        
+        self.ball_diameter = 10
+        self.ball_x = self.board_x + self.board_width // 2 - self.ball_diameter // 2
+        self.ball_y = self.board_y + self.board_height // 2 - self.ball_diameter // 2
+        self.ball_speed_x = 4
+        self.ball_speed_y = 4
+
+        self.draw_board()
+        self.draw_paddle()
+        self.draw_ball()
+        self.move_ball()
+
+        self.canvas.bind_all('<Left>', self.move_paddle_left)
+        self.canvas.bind_all('<Right>', self.move_paddle_right)
 
     def draw_board(self):
-        canvas.create_rectangle(self.x, 
-                                self.y, 
-                                self.width, 
-                                self.height,
-                                fill = "#000000",
-                                outline=" "
-                                )
-    def draw_ball(self, x=self.x/2, y=self.y/2, width=):
-        canvas.create_oval()
+        self.canvas.create_rectangle(self.board_x,
+                                     self.board_y,
+                                     self.board_x + self.board_width,
+                                     self.board_y + self.board_height,
+                                     fill="#474AA0",
+                                     outline="white")
+
+    def draw_paddle(self):
+        self.paddle = self.canvas.create_rectangle(self.paddle_x,
+                                                   self.paddle_y,
+                                                   self.paddle_x + self.paddle_width,
+                                                   self.paddle_y + self.paddle_height,
+                                                   fill="white")
+
+    def draw_ball(self):
+        self.ball = self.canvas.create_oval(self.ball_x,
+                                            self.ball_y,
+                                            self.ball_x + self.ball_diameter,
+                                            self.ball_y + self.ball_diameter,
+                                            fill="white")
+
+    def move_ball(self):
+        self.ball_x += self.ball_speed_x
+        self.ball_y += self.ball_speed_y
+        
+        if self.ball_y <= self.board_y or self.ball_y >= self.board_y + self.board_height - self.ball_diameter:
+            self.ball_speed_y *= -1
+        
+        if (self.ball_y + self.ball_diameter >= self.paddle_y and
+            self.paddle_x <= self.ball_x <= self.paddle_x + self.paddle_width):
+            self.ball_speed_y *= -1
+
+        if self.ball_x <= self.board_x or self.ball_x >= self.board_x + self.board_width - self.ball_diameter:
+            self.ball_speed_x *= -1
+
+        if self.ball_y >= self.board_y + self.board_height:
+            self.ball_speed_x *= -1
+            self.ball_speed_y *= -1
+            self.ball_x = self.board_x + self.board_width // 2 - self.ball_diameter // 2
+            self.ball_y = self.board_y + self.board_height // 2 - self.ball_diameter // 2
+
+        self.canvas.coords(self.ball, self.ball_x, self.ball_y, self.ball_x + self.ball_diameter, self.ball_y + self.ball_diameter)
+        
+        self.canvas.after(20, self.move_ball)
+
+    def move_paddle_left(self, event):
+        if self.paddle_x > self.board_x:
+            self.paddle_x -= 20
+            self.canvas.coords(self.paddle, self.paddle_x, self.paddle_y, self.paddle_x + self.paddle_width, self.paddle_y + self.paddle_height)
+
+    def move_paddle_right(self, event):
+        if self.paddle_x < self.board_x + self.board_width - self.paddle_width:
+            self.paddle_x += 20
+            self.canvas.coords(self.paddle, self.paddle_x, self.paddle_y, self.paddle_x + self.paddle_width, self.paddle_y + self.paddle_height)
 
 def hide_rect(rect):
     canvas.itemconfig(rect, state='hidden')
@@ -144,6 +211,7 @@ def scan_directory_menu():
         fill="#FFFFFF",
         font=("Inter Black", 64 * -1)
     )
+    pong = Pong(canvas)
 
 def scan_button_clicked():
     hide_main_menu()
@@ -175,9 +243,10 @@ def scan_done_menu():
 
 def scan_directory_button_clicked():
     hide_main_menu()
-
     directory = askdirectory(title='Select directory')
-    av.full_analysis_directory(directory)
+    directory_scan_thread = Thread(target=av.full_analysis_directory, args=(directory,))
+    directory_scan_thread.start()
+    scan_directory_menu()
 
 button_image_1 = PhotoImage(file=os.path.join(RESOURCES_PATH, "button_1.png"))
 button_1 = Button(
@@ -185,7 +254,7 @@ button_1 = Button(
     image=button_image_1,
     borderwidth=0,
     highlightthickness=0,
-    command=lambda: scan_button_clicked(),
+    command=scan_button_clicked,
     relief="flat"
 )
 button_1.place(
@@ -211,7 +280,7 @@ button_2 = Button(
     image=button_image_2,
     borderwidth=0,
     highlightthickness=0,
-    command=lambda: scan_directory_button_clicked(),
+    command=scan_directory_button_clicked,
     relief="flat"
 )
 button_2.place(
@@ -252,5 +321,3 @@ white_line2 = canvas.create_rectangle(
 
 window.resizable(False, False)
 window.mainloop()
-
-
