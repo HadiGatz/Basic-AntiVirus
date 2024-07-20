@@ -44,7 +44,7 @@ def print_analysis_results(analysis):
             print(x, colored(y, "red"))
         elif y == 0:
             print(x, colored(y, "green"))
-        time.sleep(1)
+        time.sleep(0.5)
     print("------------------------------------------")
     print("Thank you for using our service.")
 

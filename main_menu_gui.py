@@ -1,7 +1,9 @@
 from tkinter import *
+from tkinter import filedialog
+
 import os
 import anti_virus as av
-import time
+from threading import Thread
 
 # get the directory of the current script
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -109,6 +111,9 @@ def scan_menu():
 
 def scan_button_clicked():
     hide_main_menu()
+    file = filedialog.askopenfilename()
+    file_scan_thread = Thread(target=av.full_analysis, args=(file,))
+    file_scan_thread.start()
     scan_menu()
 
 
