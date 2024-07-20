@@ -1,5 +1,7 @@
 from tkinter import *
 import os
+import anti_virus as av
+import time
 
 # get the directory of the current script
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -68,13 +70,48 @@ explanation_text = canvas.create_text(
     font=("Inter SemiBold", 36 * -1)
 )
 
-def scan_button_clicked():
+def hide_main_menu():
     hide_button(button_1)
     hide_button(button_2)
     hide_text(title_text)
     hide_text(explanation_text)
     hide_rect(white_line1)
     hide_rect(white_line2)
+
+def update_timer(timer, time):
+    canvas.itemconfig(timer, text=str(time))
+
+def countdown(count, timer):
+    update_timer(timer, count)
+    if count > 0:
+        window.after(1000, countdown, count - 1, timer) 
+
+def scan_menu():
+    scanning_text = canvas.create_text(
+        69.0,
+        201.0,
+        anchor="nw",
+        text="File is Scanned...",
+        fill="#FFFFFF",
+        font=("Inter Black", 64 * -1)
+    )
+    
+    timer = canvas.create_text(
+        69.0,
+        401.0,
+        anchor="nw",
+        text="5",
+        fill="#FFFFFF",
+        font=("Inter Black", 64 * -1)
+    )
+
+    countdown(5, timer)  
+
+def scan_button_clicked():
+    hide_main_menu()
+    scan_menu()
+
+
 
 button_image_1 = PhotoImage(file=os.path.join(RESOURCES_PATH, "button_1.png"))
 button_1 = Button(
