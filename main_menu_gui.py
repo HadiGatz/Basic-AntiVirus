@@ -44,7 +44,7 @@ canvas.create_rectangle(
 )
 
 title_text = canvas.create_text(
-    69.0,
+    100,
     201.0,
     anchor="nw",
     text="AK_AntiVirus",
@@ -65,7 +65,7 @@ else:
     print(f"Image not found at path: {image_path}")
 
 explanation_text = canvas.create_text(
-    121.0,
+    150,
     316.0,
     anchor="nw",
     text="Scanned using 70+\nAnti Virus services",
