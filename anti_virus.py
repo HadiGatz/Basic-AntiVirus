@@ -11,6 +11,7 @@ API_KEY = "d6970bf852d449af239cc1e7026f11ecdf69c5189ff6451c173068ef6e311c9c"
 headers = {
     "x-apikey": API_KEY
 }
+global report
 
 def get_user_file():
     while True:
@@ -48,7 +49,6 @@ def print_analysis_results(analysis):
         elif y == 0:
             print(x, colored(y, "green"))
         report += f"{x} : {y}\n"
-        time.sleep(0.5)
     print("------------------------------------------")
     print("Thank you for using our service.")
     return analysis
@@ -61,18 +61,22 @@ def full_analysis_directory(directory):
         elif os.path.isdir(current_path):
             full_analysis_directory(current_path)
 
-def full_analysis(file):
+def export_analysis(directory, analysis, file_name):
+    split_tup = os.path.splitext(os.path.basename(file_name))  
+    file_placement = os.path.join(directory, f"{split_tup[0]}-analysis.txt")
+    with open(file_placement, "w") as f:
+        f.write(analysis)
+
+def full_analysis(file, target_directory):
     if check_if_corrupted(file):
         response = scan_file(file)
         scan_results = dict(response.json())
         scan_url = scan_results['data']['links']['self']
         analysis = retrieve_scan_results(scan_url)
         print_analysis_results(analysis.json()['data']['attributes']['stats'])
+        export_analysis(target_directory, analysis, file)
 
-def export_analysis(directory, analysis):
-    file_placement = "/".join((directory, "analysis_results.txt"))
-    with open(file_placement, "w") as f:
-        f.write(analysis)
+
 
 
 

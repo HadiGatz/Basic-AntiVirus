@@ -166,10 +166,10 @@ def hide_main_menu():
     hide_rect(white_line1)
     hide_rect(white_line2)
 
-def hide_scan_menu(scanning_text, timer):
+def hide_scan_menu(scanning_text, timer, file):
     hide_text(scanning_text)
     hide_text(timer)
-    scan_done_menu()
+    scan_done_menu(file)
 
 def update_timer(timer, time):
     canvas.itemconfig(timer, text=str(time))
@@ -181,7 +181,7 @@ def countdown(count, timer, when_finished):
     else:
         when_finished()
 
-def scan_menu():
+def scan_menu(file):
     scanning_text = canvas.create_text(
         69.0,
         201.0,
@@ -200,7 +200,7 @@ def scan_menu():
         font=("Inter Black", 64 * -1)
     )
 
-    countdown(6, timer, (lambda: hide_scan_menu(scanning_text, timer)))
+    countdown(6, timer, (lambda: hide_scan_menu(scanning_text, timer, file)))
 
 def scan_directory_menu():
     waiting_text = canvas.create_text(
@@ -218,20 +218,9 @@ def scan_button_clicked():
     file = filedialog.askopenfilename(title="Select your file")
     file_scan_thread = Thread(target=av.full_analysis, args=(file,))
     file_scan_thread.start()
-    scan_menu()
+    scan_menu(file)
 
-def scan_done_menu():
-    directory_ask = canvas.create_text(
-        100,
-        401.0,
-        anchor="nw",
-        text="Pick the directory\n to which the report\n would be exported",
-        fill="#FFFFFF",
-        font=("Inter Black", 50 * -1)
-    )
-    directory = askdirectory(title='Select Folder') 
-    av.export_analysis(directory, av.report)
-    hide_text(directory_ask)
+def scan_done_menu(file):
     scan_done = canvas.create_text(
         69.0,
         401.0,
@@ -244,7 +233,8 @@ def scan_done_menu():
 def scan_directory_button_clicked():
     hide_main_menu()
     directory = askdirectory(title='Select directory')
-    directory_scan_thread = Thread(target=av.full_analysis_directory, args=(directory,))
+    target_directory = askdirectory(title='Where to keep analysis files:')
+    directory_scan_thread = Thread(target=av.full_analysis_directory, args=(directory, target_directory))
     directory_scan_thread.start()
     scan_directory_menu()
 
