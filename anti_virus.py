@@ -65,7 +65,7 @@ def export_analysis(directory, analysis, file_name):
     split_tup = os.path.splitext(os.path.basename(file_name))  
     file_placement = os.path.join(directory, f"{split_tup[0]}-analysis.txt")
     with open(file_placement, "w") as f:
-        f.write(str(analysis))
+        f.write(print_analysis_results())
 
 def full_analysis(file, target_directory):
     if check_if_corrupted(file):

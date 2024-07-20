@@ -2,6 +2,8 @@ from tkinter import *
 from tkinter import filedialog
 from tkinter.filedialog import askdirectory
 import os
+import random
+import pygame
 import anti_virus as av
 from threading import Thread
 
@@ -9,11 +11,16 @@ from threading import Thread
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 RESOURCES_PATH = os.path.join(BASE_DIR, "resources")
 
+pygame.mixer.init()
+
+# Load the sound file (make sure the sound file is in the same directory or provide the correct path)
+corner_hit_sound = pygame.mixer.Sound("lose.mp3")
+
 class Pong:
     def __init__(self, canvas):
         self.canvas = canvas
-        self.canvas_width = canvas.winfo_reqwidth()
-        self.canvas_height = canvas.winfo_reqheight()
+        self.canvas_width = self.canvas.winfo_reqwidth()
+        self.canvas_height = self.canvas.winfo_reqheight()
         
         self.board_width = 300
         self.board_height = 150
@@ -26,11 +33,10 @@ class Pong:
         self.paddle_y = self.board_y + self.board_height - self.paddle_height
         
         self.ball_diameter = 10
-        self.ball_x = self.board_x + self.board_width // 2 - self.ball_diameter // 2
-        self.ball_y = self.board_y + self.board_height // 2 - self.ball_diameter // 2
         self.ball_speed_x = 4
         self.ball_speed_y = 4
 
+        self.reset_ball()
         self.draw_board()
         self.draw_paddle()
         self.draw_ball()
@@ -65,8 +71,12 @@ class Pong:
         self.ball_x += self.ball_speed_x
         self.ball_y += self.ball_speed_y
         
-        if self.ball_y <= self.board_y or self.ball_y >= self.board_y + self.board_height - self.ball_diameter:
+        if self.ball_y <= self.board_y:
             self.ball_speed_y *= -1
+        
+        if self.ball_y >= self.board_y + self.board_height - self.ball_diameter:
+            pygame.mixer.Sound.play(corner_hit_sound)
+            self.reset_ball()
         
         if (self.ball_y + self.ball_diameter >= self.paddle_y and
             self.paddle_x <= self.ball_x <= self.paddle_x + self.paddle_width):
@@ -75,14 +85,7 @@ class Pong:
         if self.ball_x <= self.board_x or self.ball_x >= self.board_x + self.board_width - self.ball_diameter:
             self.ball_speed_x *= -1
 
-        if self.ball_y >= self.board_y + self.board_height:
-            self.ball_speed_x *= -1
-            self.ball_speed_y *= -1
-            self.ball_x = self.board_x + self.board_width // 2 - self.ball_diameter // 2
-            self.ball_y = self.board_y + self.board_height // 2 - self.ball_diameter // 2
-
         self.canvas.coords(self.ball, self.ball_x, self.ball_y, self.ball_x + self.ball_diameter, self.ball_y + self.ball_diameter)
-        
         self.canvas.after(20, self.move_ball)
 
     def move_paddle_left(self, event):
@@ -95,6 +98,11 @@ class Pong:
             self.paddle_x += 20
             self.canvas.coords(self.paddle, self.paddle_x, self.paddle_y, self.paddle_x + self.paddle_width, self.paddle_y + self.paddle_height)
 
+    def reset_ball(self):
+        self.ball_x = random.randint(self.board_x, self.board_x + self.board_width - self.ball_diameter)
+        self.ball_y = random.randint(self.board_y, self.board_y + self.board_height - self.ball_diameter)
+        self.ball_speed_x = random.choice([4, -4])
+        self.ball_speed_y = random.choice([4, -4])
 def hide_rect(rect):
     canvas.itemconfig(rect, state='hidden')
 
