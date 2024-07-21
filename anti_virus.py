@@ -40,9 +40,13 @@ def retrieve_scan_results(scan_url):
 
 def print_analysis_results(analysis):
     global report
-    report = ""
+    report = '''Your file was checked by 70+ Anti-Virus softwares.
+    Be aware of "malicious" and "suspicious" - those are stats
+    that show you viruses/suspicion on viruses in your
+    file.
+    ----------------------------------------'''
     print(colored("Your file was checked by 70+ Anti-Virus softwares.", "green"))
-    print("------------------------------------------")
+    print("------------------------------------------\n")
     for x, y in analysis.items():
         if y > 0:
             print(x, colored(y, "red"))

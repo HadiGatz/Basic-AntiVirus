@@ -45,12 +45,12 @@ class Pong:
         self.canvas.bind_all('<Right>', self.move_paddle_right)
 
     def draw_board(self):
-        self.canvas.create_rectangle(self.board_x,
-                                     self.board_y,
-                                     self.board_x + self.board_width,
-                                     self.board_y + self.board_height,
-                                     fill="#474AA0",
-                                     outline="white")
+        self.board = self.canvas.create_rectangle(self.board_x,
+                                                 self.board_y,
+                                                 self.board_x + self.board_width,
+                                                 self.board_y + self.board_height,
+                                                 fill="#474AA0",
+                                                 outline="white")
 
     def draw_paddle(self):
         self.paddle = self.canvas.create_rectangle(self.paddle_x,
@@ -102,6 +102,12 @@ class Pong:
         self.ball_y = random.randint(self.board_y, self.board_y + self.board_height - self.ball_diameter)
         self.ball_speed_x = random.choice([4, -4])
         self.ball_speed_y = random.choice([4, -4])
+
+    def hide_pong(self):
+        self.canvas.itemconfig(self.board, state='hidden')
+        self.canvas.itemconfig(self.paddle, state='hidden')
+        self.canvas.itemconfig(self.ball, state='hidden')
+
 
 def hide_widget(widget):
     widget.place_forget()
@@ -221,6 +227,18 @@ def scan_directory_menu():
     )
     pong = Pong(canvas)
 
+def hide_scan_directory_menu(waiting_text):
+    hide_text(waiting_text)
+def scan_directory_done_menu():
+    scan_done = canvas.create_text(
+        69.0,
+        401.0,
+        anchor="nw",
+        text="Thanks for using\nour services.",
+        fill="#FFFFFF",
+        font=("Inter Black", 64 * -1)
+    )
+
 def scan_button_clicked():
     hide_main_menu()
     file = filedialog.askopenfilename(title="Select your file")
@@ -247,6 +265,7 @@ def scan_directory_button_clicked():
     directory_scan_thread = Thread(target=av.full_analysis_directory, args=(directory, target_directory))
     directory_scan_thread.start()
     scan_directory_menu()
+    
 
 button_image_1 = PhotoImage(file=os.path.join(RESOURCES_PATH, "button_1.png"))
 button_1 = Button(
