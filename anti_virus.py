@@ -11,6 +11,7 @@ headers = {
 
 global report
 
+# getting the user's file via the terminal
 def get_user_file():
     while True:
         try: 
@@ -20,6 +21,7 @@ def get_user_file():
         except FileNotFoundError:
             print("Your file was not found.\nTry again.")
 
+# checks if the file is corrupted, returns False if not
 def check_if_corrupted(file):
     try:
         with open(file, "rb") as data:
@@ -29,14 +31,17 @@ def check_if_corrupted(file):
         print("The file is corrupt.")
         return True
 
+# requests a scan on a file from the API
 def scan_file(file):
     response = requests.post(url, files={'file': file}, headers=headers)
     return response
 
+# retrieves the scan results from the API
 def retrieve_scan_results(scan_url):
     analysis = requests.get(url=scan_url, headers=headers)
     return analysis
 
+# prints the scan results to the terminal
 def print_analysis_results(analysis):
     global report
     report = '''Your file was checked by 70+ Anti-Virus softwares.
@@ -56,6 +61,7 @@ def print_analysis_results(analysis):
     print("Thank you for using our service.")
     return analysis
 
+# performs an analysis on a directory. this function is recursive
 def full_analysis_directory(directory, target_directory):
     for item in os.listdir(directory):
         current_path = os.path.join(directory, item) 
@@ -64,12 +70,14 @@ def full_analysis_directory(directory, target_directory):
         elif os.path.isdir(current_path):
             full_analysis_directory(current_path, target_directory)
 
+# exports the analysis to a .txt file
 def export_analysis(directory, analysis, file_name):
     split_tup = os.path.splitext(os.path.basename(file_name))  
     file_placement = os.path.join(directory, f"{split_tup[0]}-analysis.txt")
     with open(file_placement, "w") as f:
         f.write(report)
 
+# full analysis on a file
 def full_analysis(file_path, target_directory):
     if not check_if_corrupted(file_path):
         with open(file_path, "rb") as file:

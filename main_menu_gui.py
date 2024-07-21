@@ -15,7 +15,9 @@ RESOURCES_PATH = os.path.join(BASE_DIR, "resources")
 sound_file_path = os.path.join(RESOURCES_PATH, "lose.mp3")
 corner_hit_sound = pygame.mixer.Sound(sound_file_path)
 
+# implementation of the Pong waiting game
 class Pong:
+    # initializes the pong game with a canvas
     def __init__(self, canvas):
         self.canvas = canvas
         self.canvas_width = self.canvas.winfo_reqwidth()
@@ -41,9 +43,11 @@ class Pong:
         self.draw_ball()
         self.move_ball()
 
+        # binds the 'left' and 'right' keys to the moving functions
         self.canvas.bind_all('<Left>', self.move_paddle_left)
         self.canvas.bind_all('<Right>', self.move_paddle_right)
 
+    # draws the game board on the canvas
     def draw_board(self):
         self.board = self.canvas.create_rectangle(self.board_x,
                                                  self.board_y,
@@ -51,21 +55,21 @@ class Pong:
                                                  self.board_y + self.board_height,
                                                  fill="#474AA0",
                                                  outline="white")
-
+    # draws the paddle on the canvas
     def draw_paddle(self):
         self.paddle = self.canvas.create_rectangle(self.paddle_x,
                                                    self.paddle_y,
                                                    self.paddle_x + self.paddle_width,
                                                    self.paddle_y + self.paddle_height,
                                                    fill="white")
-
+    # draws the ball on the canvas
     def draw_ball(self):
         self.ball = self.canvas.create_oval(self.ball_x,
                                             self.ball_y,
                                             self.ball_x + self.ball_diameter,
                                             self.ball_y + self.ball_diameter,
                                             fill="white")
-
+    # moves the ball and handle collisions with the board, paddle, and edges
     def move_ball(self):
         self.ball_x += self.ball_speed_x
         self.ball_y += self.ball_speed_y
@@ -86,29 +90,29 @@ class Pong:
 
         self.canvas.coords(self.ball, self.ball_x, self.ball_y, self.ball_x + self.ball_diameter, self.ball_y + self.ball_diameter)
         self.canvas.after(20, self.move_ball)
-
+    # moves the paddle to the left when the left arrow key is pressed
     def move_paddle_left(self, event):
         if self.paddle_x > self.board_x:
             self.paddle_x -= 20
             self.canvas.coords(self.paddle, self.paddle_x, self.paddle_y, self.paddle_x + self.paddle_width, self.paddle_y + self.paddle_height)
-
+    # moves the paddle to the right when the right arrow key is pressed
     def move_paddle_right(self, event):
         if self.paddle_x < self.board_x + self.board_width - self.paddle_width:
             self.paddle_x += 20
             self.canvas.coords(self.paddle, self.paddle_x, self.paddle_y, self.paddle_x + self.paddle_width, self.paddle_y + self.paddle_height)
-
+    # resets the ball to a random position and give it a random direction
     def reset_ball(self):
         self.ball_x = random.randint(self.board_x, self.board_x + self.board_width - self.ball_diameter)
         self.ball_y = random.randint(self.board_y, self.board_y + self.board_height - self.ball_diameter)
         self.ball_speed_x = random.choice([4, -4])
         self.ball_speed_y = random.choice([4, -4])
-
+    # hides the game board, paddle, and ball from the canvas
     def hide_pong(self):
         self.canvas.itemconfig(self.board, state='hidden')
         self.canvas.itemconfig(self.paddle, state='hidden')
         self.canvas.itemconfig(self.ball, state='hidden')
 
-
+# element-hiding functions
 def hide_widget(widget):
     widget.place_forget()
 
@@ -118,9 +122,11 @@ def hide_rect(rect):
 def hide_text(text):
     canvas.itemconfig(text, state='hidden')
 
+# window initialization
 window = Tk()
 window.geometry("582x682")
 window.configure(bg="#FFFFFF")
+window.title("AK_ANTIVIRUS")
 
 canvas = Canvas(
     window,
@@ -229,6 +235,7 @@ def scan_directory_menu():
 
 def hide_scan_directory_menu(waiting_text):
     hide_text(waiting_text)
+
 def scan_directory_done_menu():
     scan_done = canvas.create_text(
         69.0,
@@ -247,24 +254,16 @@ def scan_button_clicked():
     file_scan_thread.start()
     scan_menu(file)
 
-def scan_done_menu(file):
-    scan_done = canvas.create_text(
-        69.0,
-        401.0,
-        anchor="nw",
-        text="Thanks for using\nour services.",
-        fill="#FFFFFF",
-        font=("Inter Black", 64 * -1)
-    )
-
 def scan_directory_button_clicked():
     hide_main_menu()
     directory = askdirectory(title='Select directory')
-    print(".")
     target_directory = askdirectory(title='Where to keep analysis files:')
+    
     directory_scan_thread = Thread(target=av.full_analysis_directory, args=(directory, target_directory))
     directory_scan_thread.start()
+    
     scan_directory_menu()
+
     
 
 button_image_1 = PhotoImage(file=os.path.join(RESOURCES_PATH, "button_1.png"))
