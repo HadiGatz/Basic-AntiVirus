@@ -7,14 +7,13 @@ import pygame
 import anti_virus as av
 from threading import Thread
 
-# get the directory of the current script
+pygame.mixer.init()
+
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 RESOURCES_PATH = os.path.join(BASE_DIR, "resources")
 
-pygame.mixer.init()
-
-# Load the sound file (make sure the sound file is in the same directory or provide the correct path)
-corner_hit_sound = pygame.mixer.Sound("lose.mp3")
+sound_file_path = os.path.join(RESOURCES_PATH, "lose.mp3")
+corner_hit_sound = pygame.mixer.Sound(sound_file_path)
 
 class Pong:
     def __init__(self, canvas):
@@ -103,14 +102,15 @@ class Pong:
         self.ball_y = random.randint(self.board_y, self.board_y + self.board_height - self.ball_diameter)
         self.ball_speed_x = random.choice([4, -4])
         self.ball_speed_y = random.choice([4, -4])
+
+def hide_widget(widget):
+    widget.place_forget()
+
 def hide_rect(rect):
     canvas.itemconfig(rect, state='hidden')
 
 def hide_text(text):
     canvas.itemconfig(text, state='hidden')
-
-def hide_button(button):
-    button.place_forget()
 
 window = Tk()
 window.geometry("582x682")
@@ -167,8 +167,8 @@ explanation_text = canvas.create_text(
 )
 
 def hide_main_menu():
-    hide_button(button_1)
-    hide_button(button_2)
+    hide_widget(button_1)
+    hide_widget(button_2)
     hide_text(title_text)
     hide_text(explanation_text)
     hide_rect(white_line1)
