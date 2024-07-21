@@ -3,7 +3,7 @@ import requests
 from termcolor import colored
 
 url = 'https://www.virustotal.com/api/v3/files'
-API_KEY = "fceb4dc36a4980567dc71cb22291dd80366e027b2cc2eeb0d776b0d4932e11fd"
+API_KEY = ""
 
 headers = {
     "x-apikey": API_KEY
