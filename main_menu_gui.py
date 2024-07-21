@@ -189,7 +189,7 @@ def hide_main_menu():
 def hide_scan_menu(scanning_text, timer, file):
     hide_text(scanning_text)
     hide_text(timer)
-    scan_done_menu(file)
+    scan_directory_done_menu()
 
 def update_timer(timer, time):
     canvas.itemconfig(timer, text=str(time))
